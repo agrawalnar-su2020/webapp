@@ -5,6 +5,7 @@
 <html>
 <head>
     <title>Registration Page</title>
+    <link rel="stylesheet" href="/HomeStyle.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 </head>
 <body>
@@ -35,6 +36,11 @@
         <tr>
             <td>Password:</td>
             <td><form:password path="password" size="30" required="required" /> <font color="red"><form:errors path="password" /></font></td>
+        </tr>
+
+        <tr>
+            <td> Confirm Password:</td>
+            <td><form:password path="confirmPassword" size="30" required="required" /> <font color="red"><form:errors path="confirmPassword" /></font></td>
         </tr>
 
         <tr>

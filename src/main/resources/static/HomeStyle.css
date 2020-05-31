@@ -1,0 +1,21 @@
+#td1{
+    resize: horizontal;
+    color: red
+}
+
+#td2{
+    text-transform: uppercase
+}
+
+h1{
+    color: blue
+}
+
+table{
+    margin-left: 100px;
+
+}
+
+#a1{
+    float: right;
+}

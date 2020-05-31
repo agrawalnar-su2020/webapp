@@ -2,6 +2,7 @@ package com.csye6225.webapps.controller;
 
 
 import com.csye6225.webapps.model.User;
+import com.csye6225.webapps.service.BookService;
 import com.csye6225.webapps.service.UserService;
 import com.csye6225.webapps.validator.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private BookService bookService;
 
     @Autowired
     private UserValidator userValidator;

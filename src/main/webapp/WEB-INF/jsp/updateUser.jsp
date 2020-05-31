@@ -6,7 +6,7 @@
 </head>
 <body>
 <a class = "btn btn-primary" href="/home" >Home</a>
-<h2>Update User Details</h2>
+<h2>Update user account details</h2>
 <br/>
 <br/>
 <form action="/updatedetail" method="post">
@@ -21,6 +21,12 @@
         <tr>
             <td>Last Name:</td>
             <td><input name="lastName" size="30" value="${user.lastName}" pattern="[a-zA-Z ]+" title="Name contains only Alphabet" required />
+            </td>
+        </tr>
+
+        <tr>
+            <td>Email Id:</td>
+            <td><input name="email" size="30" value="${user.email}" readonly />
             </td>
         </tr>
 
