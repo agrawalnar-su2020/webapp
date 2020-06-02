@@ -2,9 +2,9 @@
 ## CSYE 6225 - Summer 2020
 
 ## Technology Stack
-Operating System - Linux (Ubuntu 18.04.3 LTS)
-Programming Language - Java
-Relational Database - MySQL
+- Operating System - Linux (Ubuntu 18.04.3 LTS)
+- Programming Language - Java
+- Relational Database - MySQL
 Backend Framework - Spring and Hibernate
 
 ## Build Instructions
