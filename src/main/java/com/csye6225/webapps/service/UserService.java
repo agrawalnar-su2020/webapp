@@ -1,11 +1,14 @@
 package com.csye6225.webapps.service;
 
 
+import com.csye6225.webapps.model.Book;
 import com.csye6225.webapps.model.User;
 import com.csye6225.webapps.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserService {
@@ -37,4 +40,6 @@ public class UserService {
         user.setLastName(u.getLastName());
         repository.save(user);
     }
+
+
 }

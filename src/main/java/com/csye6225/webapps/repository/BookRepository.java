@@ -12,4 +12,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     @Query(value="Select * From book b where b.user_userid = :userID",nativeQuery = true)
     List<Book> sellerBooks(Long userID);
 
+    @Query(value="Select * From book b where b.quantity >0 And b.user_userid != :userID",nativeQuery = true)
+    List<Book> buyerBooks(Long userID);
+
 }

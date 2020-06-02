@@ -30,4 +30,7 @@ public class BookService {
 
         repository.deleteById(bookID);
     }
+    public List<Book> buyerBooks(Long userID){
+        return repository.buyerBooks(userID);
+    }
 }

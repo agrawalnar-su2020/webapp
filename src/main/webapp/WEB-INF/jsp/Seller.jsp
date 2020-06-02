@@ -23,8 +23,8 @@
         <td id="td1"> ISBN </td>
         <td id="td1"> Author </td>
         <td id="td1"> Publication Date</td>
-        <td id="td1"> Quantity </td>
         <td id="td1"> Price </td>
+        <td id="td1"> Available Quantity </td>
         <td id="td1"> Update Book </td>
         <td id="td1"> Delete Book </td>
     </tr>
@@ -35,8 +35,8 @@
             <td> ${book.ISBN} </td>
             <td> ${book.authors} </td>
             <td> ${book.publicationDate} </td>
-            <td> ${book.quantity} </td>
             <td> ${book.price} </td>
+            <td> ${book.quantity} </td>
             <td align="center"><a class = "btn btn-success" href="${contextPath}/seller/updatebook?id=${book.bookID}" > Update </a></td>
             <td align="center"><a class = "btn btn-danger" href="${contextPath}/seller/deletebook?id=${book.bookID}" onclick = "if (! confirm('Book will be deleted permanently, want to continue?')) return false;" > Delete </a></td>
         </tr>

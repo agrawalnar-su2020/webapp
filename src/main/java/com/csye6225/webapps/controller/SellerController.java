@@ -1,5 +1,6 @@
 package com.csye6225.webapps.controller;
 
+import com.csye6225.webapps.comparator.BookComparator;
 import com.csye6225.webapps.model.Book;
 import com.csye6225.webapps.model.User;
 import com.csye6225.webapps.service.BookService;
@@ -12,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -33,6 +35,7 @@ public class SellerController {
         else {
             User user = (User) sessionExit.getAttribute("user");
             List<Book> books = bookService.sellerBooks(user.getUserID());
+            Collections.sort(books, new BookComparator());
             mv.addObject("sellerBooks",books);
             mv.setViewName("Seller");
         }
@@ -67,6 +70,7 @@ public class SellerController {
 
         Book b = bookService.save(book);
         List<Book> books = bookService.sellerBooks(user.getUserID());
+        Collections.sort(books, new BookComparator());
         mv.addObject("sellerBooks",books);
         mv.setViewName("Seller");
         return mv;
@@ -116,6 +120,7 @@ public class SellerController {
         HttpSession sessionExit = (HttpSession) request.getSession(false);
         User user = (User) sessionExit.getAttribute("user");
         List<Book> books = bookService.sellerBooks(user.getUserID());
+        Collections.sort(books, new BookComparator());
         mv.addObject("sellerBooks",books);
         mv.setViewName("Seller");
         return mv;
@@ -138,7 +143,8 @@ public class SellerController {
         }
         if(flag){
             bookService.deleteBook(id);
-            mv.addObject("sellerBooks", bookService.sellerBooks(user.getUserID()));
+            Collections.sort(books, new BookComparator());
+            mv.addObject("sellerBooks",books);
             mv.setViewName("Seller");
         }else{
             mv.addObject("error","You can't delete this book");

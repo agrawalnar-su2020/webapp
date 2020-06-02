@@ -18,37 +18,36 @@
     <table class="table">
         <tr>
             <td>Title:</td>
-            <td><input name="title" size="30"  value="${book.title}" required="required" pattern="[a-zA-Z0-9 ]+" title="Title contains only alphanumeric" /> </td>
+            <td><input name="title" size="15"  value="${book.title}" required="required" pattern="[a-zA-Z0-9 ]+" title="Title contains only alphanumeric" /> </td>
         </tr>
 
         <tr>
             <td>ISBN:</td>
-            <td><input name="ISBN" size="30" value="${book.ISBN}" required="required" pattern="[0-9]+" title="ISBN contains only numeric value"/></td>
+            <td><input name="ISBN" size="15" value="${book.ISBN}" required="required" pattern="[0-9]{10}" title="ISBN should be of ten numeric character"/></td>
         </tr>
 
         <tr>
             <td>Author:</td>
-            <td><input name="authors" size="30" value="${book.authors}"  required="required" /></td>
+            <td><input name="authors" size="15" value="${book.authors}"  required="required" /></td>
         </tr>
 
         <tr>
             <td>Publication Date:</td>
-            <td><input name="publicationDate" type="date" value="${book.publicationDate}" size="30" required="required" /></td>
-        </tr>
-
-        <tr>
-            <td>Quantity:</td>
-            <td><input name="quantity" size="30" type="number" value="${book.quantity}" min="0" max="999" required="required" /> </td>
+            <td><input name="publicationDate" type="date" value="${book.publicationDate}" size="10" required="required" /></td>
         </tr>
 
         <tr>
             <td>Price:</td>
-            <td><input  id="price" name="price" value="${book.price}" size="30"   onchange="myFunction()" required="required" /></td>
+            <td><input  id="price" name="price" value="${book.price}" size="15"   onchange="myFunction()" required="required" /></td>
             <td><label id="check"></label></td>
         </tr>
 
         <tr>
-            <td></td>
+            <td>Quantity:</td>
+            <td><input name="quantity" size="20" type="number" value="${book.quantity}" min="0" max="999" required="required" /> </td>
+        </tr>
+
+        <tr>
             <td colspan="2"><input type="hidden" name="id"  value="${book.bookID}"><input class = "btn btn-success" type="submit" id="submit" value="Update Book" /></td>
         </tr>
 
