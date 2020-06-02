@@ -2,8 +2,10 @@ package com.csye6225.webapps.controller;
 
 import com.csye6225.webapps.comparator.BookComparator;
 import com.csye6225.webapps.model.Book;
+import com.csye6225.webapps.model.CartItem;
 import com.csye6225.webapps.model.User;
 import com.csye6225.webapps.service.BookService;
+import com.csye6225.webapps.service.CartItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +26,9 @@ public class SellerController {
 
     @Autowired
     BookService bookService;
+
+    @Autowired
+    CartItemService cartItemService;
 
     @RequestMapping(value = "/seller", method = RequestMethod.GET)
     public ModelAndView sellerHome (HttpServletRequest request) {
@@ -142,6 +147,14 @@ public class SellerController {
             }
         }
         if(flag){
+            List<CartItem> item = cartItemService.cartItemByBookID(id);
+            if(item.size()!=0){
+                Iterator<CartItem> it =item.iterator();
+                while(it.hasNext()) {
+                    CartItem temp = it.next();
+                    cartItemService.delete(temp);
+                }
+            }
             bookService.deleteBook(id);
             Collections.sort(books, new BookComparator());
             mv.addObject("sellerBooks",books);

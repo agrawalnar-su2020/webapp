@@ -5,6 +5,25 @@
     <title>Shopping Cart</title>
     <link rel="stylesheet" href="/HomeStyle.css"/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        function myFunction(id,quan) {
+            var x = id;
+            var z =quan;
+            var y = document.getElementById("q"+x).value;
+            if(isNaN(y)|| y>z || y<1) {
+                alert("Please add available quantity");
+            }
+            else {
+                $.ajax({
+                    method: "POST",
+                    url: "/buyer/updatecart",
+                    data: {"id": x, "quantityAdd": y}
+                });
+                alert("Cart updated");
+            }
+        }
+    </script>
 </head>
 <body>
 <a class = "btn btn-primary" href="/home" >Home</a>
@@ -26,6 +45,7 @@
                     <td id="td1"> Publication Date</td>
                     <td id="td1"> Price </td>
                     <td id="td1"> Selected Quantity</td>
+                    <td id="td1"> Update Cart</td>
                 </tr>
 
                 <c:forEach items="${cartItem}" var="item">
@@ -35,7 +55,8 @@
                         <td> ${item.book.authors} </td>
                         <td> ${item.book.publicationDate} </td>
                         <td> ${item.book.price} </td>
-                        <td> ${item.quantityAdd} </td>
+                        <td><input id="q${item.cartItemID}" type="number" min="1" max="${item.book.quantity}" value="${item.quantityAdd}" required="required" /> </td>
+                        <td><input  class = "btn btn-success" id="${item.cartItemID}" type="button" onclick="myFunction(this.id,${item.book.quantity})" value="Update" /></td>
                     </tr>
 
                 </c:forEach>

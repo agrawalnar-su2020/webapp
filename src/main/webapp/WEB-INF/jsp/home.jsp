@@ -12,16 +12,15 @@
             var z =quan;
             var y = document.getElementById("q"+x).value;
             if(isNaN(y)|| y>z || y<1) {
-                alert("1");
                 alert("Please add available quantity");
             }
             else {
-                alert("2");
                 $.ajax({
                     method: "POST",
                     url: "/buyer/addcart",
                     data: {"id": x, "quantityAdd": y}
                 });
+                alert("Added to cart");
             }
         }
     </script>
@@ -63,7 +62,7 @@
                     <td> ${book.publicationDate} </td>
                     <td> ${book.price} </td>
                     <td> ${book.quantity} </td>
-                    <td><input id="q${book.bookID}" type="number" min="1" max="${book.quantity}" required="required" /> </td>
+                    <td><input id="q${book.bookID}" type="number" min="1" max="${book.quantity}" value="1" required="required" /> </td>
                     <td><input  class = "btn btn-success" id="${book.bookID}" type="button" onclick="myFunction(this.id,${book.quantity})" value="Add" /></td>
                 </tr>
 

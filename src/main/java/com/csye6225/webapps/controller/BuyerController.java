@@ -78,4 +78,19 @@ public class BuyerController {
         }
         return mv;
     }
+
+    @RequestMapping(value = "/buyer/updatecart", method = RequestMethod.POST)
+    public ModelAndView updateCart (HttpServletRequest request) {
+        ModelAndView mv = new ModelAndView();
+        int quant =Integer.parseInt (request.getParameter("quantityAdd"));
+        CartItem exitItem = cartItemService.cartItemByID(Long.parseLong(request.getParameter("id")));
+        exitItem.setQuantityAdd(quant);
+        cartItemService.save(exitItem);
+        HttpSession sessionExit = (HttpSession) request.getSession(false);
+        User user = (User) sessionExit.getAttribute("user");
+        ShoppingCart cart = cartService.cartByUserID(user.getUserID());
+        mv.addObject("cartItem",cart.getCartItem());
+        mv.setViewName("shoppingCart");
+        return mv;
+    }
 }
