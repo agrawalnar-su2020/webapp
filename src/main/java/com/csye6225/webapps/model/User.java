@@ -1,17 +1,15 @@
 package com.csye6225.webapps.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
-
 public class User {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private Long user_id;
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    private Long userID;
 
     //@Column(name = "firstName")
     private String firstName;
@@ -25,12 +23,19 @@ public class User {
     //@Column(name = "password")
     private String password;
 
-    public Long getUser_id() {
-        return user_id;
+    @Transient
+    private String confirmPassword;
+
+    @OneToMany
+    private Set<Book> books = new LinkedHashSet<Book>();
+
+
+    public Long getUserID() {
+        return userID;
     }
 
-    public void setUser_id(Long user_id) {
-        this.user_id = user_id;
+    public void setUserID(Long userID) {
+        this.userID = userID;
     }
 
     public String getFirstName() {
@@ -63,5 +68,21 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
+    }
+
+    public Set<Book> getBooks() {
+        return books;
+    }
+
+    public void setBooks(Set<Book> books) {
+        this.books = books;
     }
 }

@@ -32,6 +32,7 @@ public class UserValidator implements Validator {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName", "error.invalid.user", "First Name Required");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lastName", "error.invalid.user", "Last Name Required");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "error.invalid.password", "Password Required");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "confirmPassword", "error.invalid.confirmPassword", " Confirm Password Required");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "error.invalid.email","Email Required");
 
         try {
@@ -54,7 +55,11 @@ public class UserValidator implements Validator {
             if (u != null){
                 errors.rejectValue("email", "error.invalid.user", "Email ID already taken");
             }
-
+            System.out.println(user.getPassword());
+            System.out.println(user.getConfirmPassword());
+            if(!user.getConfirmPassword().equals(user.getPassword())){
+                errors.rejectValue("confirmPassword", "error.invalid.user", "Password must be same");
+            }
 
         } catch (Exception e) {
             // TODO Auto-generated catch block

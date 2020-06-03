@@ -1,7 +1,12 @@
 package com.csye6225.webapps.controller;
 
 
+import com.csye6225.webapps.comparator.BookComparator;
+import com.csye6225.webapps.model.Book;
+import com.csye6225.webapps.model.ShoppingCart;
 import com.csye6225.webapps.model.User;
+import com.csye6225.webapps.service.BookService;
+import com.csye6225.webapps.service.ShoppingCartService;
 import com.csye6225.webapps.service.UserService;
 import com.csye6225.webapps.validator.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +20,21 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Collections;
+import java.util.List;
 
 @Controller
 public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private BookService bookService;
+
+    @Autowired
+    private ShoppingCartService cartService;
+
 
     @Autowired
     private UserValidator userValidator;
@@ -38,9 +52,11 @@ public class UserController {
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public  ModelAndView register(@ModelAttribute("user") User user, HttpServletRequest request, BindingResult bindingResult, ModelMap model){
-        userValidator.validate(user, bindingResult);
+    public  ModelAndView register(@ModelAttribute("user") User user, HttpServletRequest request, BindingResult bindingResult, ModelMap model, ShoppingCart cart){
+
         ModelAndView mv = new ModelAndView();
+        userValidator.validate(user, bindingResult);
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("user",user);
             mv.setViewName("registerUsers");
@@ -48,11 +64,11 @@ public class UserController {
         }
 
         User u = userService.save(user);
-        HttpSession session = (HttpSession) request.getSession();
-        session.setAttribute("user", user);
+        cart.setUser(user);
+        cartService.save(cart);
         mv.addObject("user",user);
-        mv.setViewName("home");
-            return mv;
+        mv.setViewName("registrationSuccess");
+        return mv;
     }
     @RequestMapping(value = "/home", method = RequestMethod.POST)
     public ModelAndView login(HttpServletRequest request ){
@@ -68,6 +84,9 @@ public class UserController {
            HttpSession session = (HttpSession) request.getSession();
            session.setAttribute("user", u);
            mv.addObject("user",u);
+           List<Book> books = bookService.buyerBooks(u.getUserID());
+           Collections.sort(books, new BookComparator());
+           mv.addObject("buyerBooks",books);
            mv.setViewName("home");
        }
        return mv;
@@ -84,6 +103,9 @@ public class UserController {
             HttpSession session = (HttpSession) request.getSession(false);
             User u = (User) session.getAttribute("user");
             mv.addObject("user",u);
+            List<Book> books = bookService.buyerBooks(u.getUserID());
+            Collections.sort(books, new BookComparator());
+            mv.addObject("buyerBooks",books);
             mv.setViewName("home");
         }
         return mv;
@@ -119,6 +141,10 @@ public class UserController {
             u.setPassword(request.getParameter("password"));
 
             userService.updateUser(u);
+            session.setAttribute("user",u);
+            List<Book> books = bookService.buyerBooks(u.getUserID());
+            Collections.sort(books, new BookComparator());
+            mv.addObject("buyerBooks",books);
             mv.setViewName("home");
         }
         return mv;
