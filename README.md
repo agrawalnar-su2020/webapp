@@ -9,7 +9,7 @@
 
 ## Build Instructions
 - Build the Application using Maven Build
--
+
 ## Deploy Instructions
 - Run the "webapps.java" as Java Application
 - When the Application successfully deployes open web browser and go to "localhost:8080
