@@ -156,8 +156,9 @@ public class SellerController {
                 }
             }
             bookService.deleteBook(id);
-            Collections.sort(books, new BookComparator());
-            mv.addObject("sellerBooks",books);
+            List<Book> bookUp = bookService.sellerBooks(user.getUserID());
+            Collections.sort(bookUp, new BookComparator());
+            mv.addObject("sellerBooks",bookUp);
             mv.setViewName("Seller");
         }else{
             mv.addObject("error","You can't delete this book");

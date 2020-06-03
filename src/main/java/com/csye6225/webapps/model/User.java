@@ -8,8 +8,7 @@ import java.util.Set;
 public class User {
 
     @Id
-    //@Column(name = "userID")
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy= GenerationType.AUTO)
     private Long userID;
 
     //@Column(name = "firstName")

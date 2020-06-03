@@ -1,14 +1,15 @@
 #td1{
     resize: horizontal;
-    color: red
+    color: red;
+    text-align: center;
 }
 
 #td2{
-    text-transform: uppercase
+    text-transform: uppercase;
 }
 
 h1{
-    color: blue
+    color: blue;
 }
 
 table{

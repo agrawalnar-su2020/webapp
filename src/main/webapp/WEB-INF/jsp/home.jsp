@@ -56,14 +56,14 @@
 
             <c:forEach items="${buyerBooks}" var="book">
                 <tr>
-                    <td> ${book.title} </td>
-                    <td> ${book.ISBN} </td>
-                    <td> ${book.authors} </td>
-                    <td> ${book.publicationDate} </td>
-                    <td> ${book.price} </td>
-                    <td> ${book.quantity} </td>
-                    <td><input id="q${book.bookID}" type="number" min="1" max="${book.quantity}" value="1" required="required" /> </td>
-                    <td><input  class = "btn btn-success" id="${book.bookID}" type="button" onclick="myFunction(this.id,${book.quantity})" value="Add" /></td>
+                    <td align="center"> ${book.title} </td>
+                    <td align="center"> ${book.ISBN} </td>
+                    <td align="center"> ${book.authors} </td>
+                    <td align="center"> ${book.publicationDate} </td>
+                    <td align="center"> ${book.price} </td>
+                    <td align="center"> ${book.quantity} </td>
+                    <td align="center"><input id="q${book.bookID}" type="number" min="1" max="${book.quantity}" value="1" required="required" /> </td>
+                    <td align="center"><input  class = "btn btn-success" id="${book.bookID}" type="button" onclick="myFunction(this.id,${book.quantity})" value="Add" /></td>
                 </tr>
 
             </c:forEach>

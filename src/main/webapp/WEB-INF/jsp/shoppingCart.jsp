@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="/HomeStyle.css"/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <c:set var="contextPath" value="${pageContext.request.contextPath}" />
     <script type="text/javascript">
         function myFunction(id,quan) {
             var x = id;
@@ -23,6 +24,18 @@
                 alert("Cart updated");
             }
         }
+        // function remove(id) {
+        //     var x = id;
+        //     if (! confirm('Book will be deleted permanently, want to continue?')) return false;
+        //     else {
+        //         alert("hi");
+        //         $.ajax({
+        //             method: "POST",
+        //             url: "/buyer/removeitem",
+        //             data: {"id": x}
+        //         });
+        //     }
+        // }
     </script>
 </head>
 <body>
@@ -46,17 +59,20 @@
                     <td id="td1"> Price </td>
                     <td id="td1"> Selected Quantity</td>
                     <td id="td1"> Update Cart</td>
+                    <td id="td1"> Remove from cart</td>
                 </tr>
 
                 <c:forEach items="${cartItem}" var="item">
                     <tr>
-                        <td> ${item.book.title} </td>
-                        <td> ${item.book.ISBN} </td>
-                        <td> ${item.book.authors} </td>
-                        <td> ${item.book.publicationDate} </td>
-                        <td> ${item.book.price} </td>
-                        <td><input id="q${item.cartItemID}" type="number" min="1" max="${item.book.quantity}" value="${item.quantityAdd}" required="required" /> </td>
-                        <td><input  class = "btn btn-success" id="${item.cartItemID}" type="button" onclick="myFunction(this.id,${item.book.quantity})" value="Update" /></td>
+                        <td align="center"> ${item.book.title} </td>
+                        <td align="center"> ${item.book.ISBN} </td>
+                        <td align="center"> ${item.book.authors} </td>
+                        <td align="center"> ${item.book.publicationDate} </td>
+                        <td align="center"> ${item.book.price} </td>
+                        <td align="center"><input id="q${item.cartItemID}" type="number" min="1" max="${item.book.quantity}" value="${item.quantityAdd}" required="required" /> </td>
+                        <td align="center"><input  class = "btn btn-success" id="${item.cartItemID}" type="button" onclick="myFunction(this.id,${item.book.quantity})" value="Update" /></td>
+<%--                        <td align="center"><input  class = "btn btn-danger"  type="button" onclick="remove(${item.cartItemID})" value="Remove" /></td>--%>
+                        <td align="center"><a class = "btn btn-danger" href="${contextPath}/buyer/removeitem?id=${item.cartItemID}" onclick = "if (! confirm('Book will be deleted permanently, want to continue?')) return false;" > Remove </a></td>
                     </tr>
 
                 </c:forEach>

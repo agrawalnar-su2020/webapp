@@ -93,4 +93,37 @@ public class BuyerController {
         mv.setViewName("shoppingCart");
         return mv;
     }
+
+    @RequestMapping(value = "/buyer/removeitem", method = RequestMethod.GET)
+    public ModelAndView removeItem (HttpServletRequest request) {
+        ModelAndView mv = new ModelAndView();
+        // Checking Session
+        HttpSession sessionExit = (HttpSession) request.getSession(false);
+        if (sessionExit == null)
+            mv.setViewName("index");
+        else {
+            User user = (User) sessionExit.getAttribute("user");
+            ShoppingCart cart = cartService.cartByUserID(user.getUserID());
+            Long id = Long.parseLong(request.getParameter("id"));
+            boolean flag = false;
+            for(CartItem item: cart.getCartItem()){
+                if(item.getCartItemID() ==id ){
+                    flag = true;
+                }
+            }
+            if(flag){
+                CartItem exitItem = cartItemService.cartItemByID(id);
+                cart.getCartItem().remove(exitItem);
+                cartService.save(cart);
+                cartItemService.delete(exitItem);
+                ShoppingCart cartNew = cartService.cartByUserID(user.getUserID());
+                mv.addObject("cartItem", cartNew.getCartItem());
+                mv.setViewName("shoppingCart");
+            }else{
+                mv.addObject("error","You can't remove book from cart");
+                mv.setViewName("error");
+            }
+        }
+        return mv;
+    }
 }
