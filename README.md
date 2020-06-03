@@ -4,8 +4,7 @@
 ## Technology Stack
 - Operating System - Linux (Ubuntu 18.04.3 LTS)
 - Programming Language - Java
-- Relational Database - MySQL
-- Backend Framework - Spring and Hibernate
+- Relational Database - MySQL Backend Framework - Spring and Hibernate
 
 ## Build Instructions
 - Build the Application using Maven Build
