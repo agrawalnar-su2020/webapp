@@ -11,6 +11,7 @@
     <groupId>com.csye6225</groupId>
     <artifactId>webapps</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>war</packaging>
     <name>webapps</name>
     <description>Spring Boot</description>
 
@@ -82,6 +83,12 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.9</version>
         </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk</artifactId>
+            <version>1.11.106</version>
+        </dependency>
+
     </dependencies>
 
     <build>

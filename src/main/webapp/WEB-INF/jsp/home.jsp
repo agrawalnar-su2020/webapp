@@ -50,6 +50,7 @@
                 <td id="td1"> Publication Date</td>
                 <td id="td1"> Price </td>
                 <td id="td1"> Available Quantity </td>
+                <td id="td1"> Book Image </td>
                 <td id="td1"> Select Quantity</td>
                 <td id="td1"> Add to Cart </td>
             </tr>
@@ -62,6 +63,7 @@
                     <td align="center"> ${book.publicationDate} </td>
                     <td align="center"> ${book.price} </td>
                     <td align="center"> ${book.quantity} </td>
+                    <td align="center"><a class = "btn btn-success" href="${contextPath}/seller/viewimage?id=${book.bookID}" > View </a></td>
                     <td align="center"><input id="q${book.bookID}" type="number" min="1" max="${book.quantity}" value="1" required="required" /> </td>
                     <td align="center"><input  class = "btn btn-success" id="${book.bookID}" type="button" onclick="myFunction(this.id,${book.quantity})" value="Add" /></td>
                 </tr>
