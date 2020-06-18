@@ -15,7 +15,7 @@
 <h3>Add new Book</h3>
 <br>
 <br>
-<form action="${contextPath}/seller/addbook" method="post">
+<form action="${contextPath}/seller/addbook" method="post" enctype="multipart/form-data">
 
     <table class="table">
         <tr>
@@ -47,6 +47,11 @@
         <tr>
             <td>Quantity:</td>
             <td><input name="quantity" size="20" type="number" min="0" max="999" required="required" /> </td>
+        </tr>
+
+        <tr>
+            <td>Upload Images:</td>
+            <td> <input type="file" size="15" name="image" multiple="multiple" accept="image/*" /></td>
         </tr>
 
         <tr>
