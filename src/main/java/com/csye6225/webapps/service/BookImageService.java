@@ -1,13 +1,12 @@
 package com.csye6225.webapps.service;
 
 import com.amazonaws.AmazonServiceException;
-import com.amazonaws.auth.AWSCredentialsProviderChain;
-import com.amazonaws.auth.InstanceProfileCredentialsProvider;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.csye6225.webapps.model.Book;
 import com.csye6225.webapps.model.BookImages;
 import com.csye6225.webapps.repository.BookImagesRepository;
@@ -17,10 +16,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.PostConstruct;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -33,45 +35,16 @@ public class BookImageService {
     @Value("${Bucketname:aDefaultValue}")
     private String bucketName;
 
-    @Value("${Bucketendpoint:aDefaultValue}")
-    private String endpoint;
-
-//    @Value("${Profile:aDefaultValue}")
-//    String profile;
-//    @Value("${Region:aDefaultValue}")
-//    String region;
-//
-//    private AmazonS3  s3client;
-//
-//    @PostConstruct
-//    private void initializeAmazon() {
-//        AWSCredentialsProviderChain awsCredentialsProviderChain = new AWSCredentialsProviderChain(
-//                new InstanceProfileCredentialsProvider(true),
-//                new ProfileCredentialsProvider(profile));
-//
-//        this.s3client = AmazonS3ClientBuilder.standard()
-//                .withCredentials(awsCredentialsProviderChain)
-//                .withRegion(region)
-//                .build();
-//
-//    }
-
     public void save(BookImages image){
         repository.save(image);
     }
 
     public void uploadeImage (MultipartFile file, Book b){
-        System.out.println(bucketName);
-        System.out.println(endpoint);
 
         String filename = new Date().getTime() + StringUtils.cleanPath(file.getOriginalFilename());
-        String fileUrl = endpoint + "/" + filename;
-        System.out.println(filename);
-        System.out.println(fileUrl);
         BookImages image = new BookImages();
         image.setBook(b);
         image.setImageName(filename);
-        image.setImageURL(fileUrl);
         save(image);
         uploadToS3(file,filename);
 
@@ -109,9 +82,42 @@ public class BookImageService {
         s3client.deleteObject(new DeleteObjectRequest(bucketName, fileName));
     }
 
-    public List<String> bookImagesURL(Long bookID){
-        return repository.bookImagesURL(bookID);
+    public String viewImage(String key){
+        String base64 ="";
+        try {
+
+        AmazonS3 s3client = AmazonS3ClientBuilder.defaultClient();
+        S3Object o = s3client.getObject(bucketName, key);
+        BufferedImage imgBuf = ImageIO.read(o.getObjectContent());
+        base64 = encodeBase64URL(imgBuf);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return base64.isEmpty() ? null : base64;
     }
+
+    public String encodeBase64URL(BufferedImage imgBuf) throws IOException {
+        String base64;
+
+        if (imgBuf == null) {
+            base64 = null;
+        } else {
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+            ImageIO.write(imgBuf, "PNG", out);
+
+            byte[] bytes = out.toByteArray();
+            base64 = "data:image/png;base64," + new String(Base64.getEncoder().encode(bytes), "UTF-8");
+        }
+
+        return base64;
+    }
+
+//    public List<String> bookImagesURL(Long bookID){
+//        return repository.bookImagesURL(bookID);
+//    }
 
     public List<Long> imagesID(Long bookID){
         return repository.imagesID(bookID);

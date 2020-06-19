@@ -20,10 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @Controller
 @RequestMapping("/seller/**")
@@ -83,18 +80,18 @@ public class SellerController {
 
         Book b = bookService.save(book);
 
-        if(file.size()!=0){
-            Iterator<MultipartFile> i=file.iterator();
-            while(i.hasNext()) {
+        if(file.size()!=0) {
+            Iterator<MultipartFile> i = file.iterator();
+            while (i.hasNext()) {
                 MultipartFile temp = i.next();
-                imageService.uploadeImage(temp,b);
+                imageService.uploadeImage(temp, b);
             }
-
+        }
         List<Book> books = bookService.sellerBooks(user.getUserID());
         Collections.sort(books, new BookComparator());
         mv.addObject("sellerBooks",books);
         mv.setViewName("Seller");
-        }
+
         return mv;
     }
     @RequestMapping(value = "/seller/updatebook", method = RequestMethod.GET)
@@ -117,8 +114,10 @@ public class SellerController {
                 }
             }
             if(flag){
-               mv.addObject("book", bookService.bookById(id));
-               mv.setViewName("updateBook");
+                List<String> imagesURL = imageService.imagesName(id);
+                mv.addObject("imagesURL",imagesURL);
+                mv.addObject("book", bookService.bookById(id));
+                mv.setViewName("updateBook");
             }else{
                 mv.addObject("error","You can't update this book");
                 mv.setViewName("error");
@@ -127,7 +126,7 @@ public class SellerController {
         return mv;
     }
     @RequestMapping(value = "/seller/updatebook", method = RequestMethod.POST)
-    public ModelAndView updateBookS (HttpServletRequest request) {
+    public ModelAndView updateBookS (HttpServletRequest request,@RequestParam("image") List<MultipartFile> file) {
         ModelAndView mv = new ModelAndView();
         Long id = Long.parseLong(request.getParameter("id"));
         Book book = bookService.bookById(id);
@@ -138,7 +137,14 @@ public class SellerController {
         book.setQuantity( Integer.parseInt (request.getParameter("quantity")));
         book.setPrice(Double.parseDouble(request.getParameter("price")));
         book.setBookUpdateTime(new Date());
-        bookService.save(book);
+        Book b = bookService.save(book);
+        if(file.size()!=0) {
+            Iterator<MultipartFile> i = file.iterator();
+            while (i.hasNext()) {
+                MultipartFile temp = i.next();
+                imageService.uploadeImage(temp, b);
+            }
+        }
         HttpSession sessionExit = (HttpSession) request.getSession(false);
         User user = (User) sessionExit.getAttribute("user");
         List<Book> books = bookService.sellerBooks(user.getUserID());
@@ -172,6 +178,22 @@ public class SellerController {
                     cartItemService.delete(temp);
                 }
             }
+            List<String> imagesName = imageService.imagesName(id);
+            if(imagesName.size()!=0) {
+
+                Iterator<String> k = imagesName.iterator();
+                while (k.hasNext()) {
+                    String temp = k.next();
+                    imageService.deleteS3Image(temp);
+                }
+
+                List<Long> imagesID = imageService.imagesID(id);
+                Iterator<Long> j = imagesID.iterator();
+                while (j.hasNext()) {
+                    Long temp = j.next();
+                    imageService.deleteDBImage(temp);
+                }
+            }
             bookService.deleteBook(id);
             List<Book> bookUp = bookService.sellerBooks(user.getUserID());
             Collections.sort(bookUp, new BookComparator());
@@ -186,6 +208,7 @@ public class SellerController {
 
     @RequestMapping(value = "/seller/viewimage", method = RequestMethod.GET)
     public ModelAndView viewImage (HttpServletRequest request) {
+        List<String> imagesURL = new LinkedList<>();
         ModelAndView mv = new ModelAndView();
         // Checking Session
         HttpSession sessionExit = (HttpSession) request.getSession(false);
@@ -193,12 +216,18 @@ public class SellerController {
             mv.setViewName("index");
         else {
             Long bookID = Long.parseLong(request.getParameter("id"));
-            List<String> imagesURL = imageService.bookImagesURL(bookID);
-            if(imagesURL.size()==0){
+            List<String> imagesName = imageService.imagesName(bookID);
+            if(imagesName.size()==0){
                 mv.addObject("error","Image is not available");
                 mv.setViewName("error");
             }else{
-                mv.addObject("imagesURL",imagesURL.get(0));
+                Iterator<String> k = imagesName.iterator();
+                while (k.hasNext()) {
+                    String temp = k.next();
+                    String image = imageService.viewImage(temp);
+                    imagesURL.add(image);
+                }
+                mv.addObject("imagesURL",imagesURL);
                 mv.setViewName("viewImages");
             }
         }

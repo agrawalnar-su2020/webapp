@@ -13,7 +13,7 @@
 <h3>Update book with title ${book.title}</h3>
 <br>
 <br>
-<form action="${contextPath}/seller/updatebook" method="post">
+<form action="${contextPath}/seller/updatebook" method="post" enctype="multipart/form-data">
 
     <table class="table">
         <tr>
@@ -46,6 +46,18 @@
             <td>Quantity:</td>
             <td><input name="quantity" size="20" type="number" value="${book.quantity}" min="0" max="999" required="required" /> </td>
         </tr>
+
+        <c:choose>
+            <c:when test="${empty imagesURL}">
+                <tr>
+                    <td>Upload Images:</td>
+                    <td> <input type="file" size="15" name="image" multiple="multiple" accept="image/*" /></td>
+                </tr>
+            </c:when>
+            <c:otherwise>
+                <p>To update book image, please delete all image first </p>
+            </c:otherwise>
+        </c:choose>
 
         <tr>
             <td colspan="2"><input type="hidden" name="id"  value="${book.bookID}"><input class = "btn btn-success" type="submit" id="submit" value="Update Book" /></td>

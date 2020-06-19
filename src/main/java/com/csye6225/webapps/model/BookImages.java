@@ -13,8 +13,6 @@ public class BookImages {
 
     private String imageName;
 
-    private String imageURL;
-
     @ManyToOne
     @JoinColumn
     private Book book;
@@ -43,11 +41,4 @@ public class BookImages {
         this.book = book;
     }
 
-    public String getImageURL() {
-        return imageURL;
-    }
-
-    public void setImageURL(String imageURL) {
-        this.imageURL = imageURL;
-    }
 }
