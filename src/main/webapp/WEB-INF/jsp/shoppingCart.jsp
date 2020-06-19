@@ -57,6 +57,7 @@
                     <td id="td1"> Author </td>
                     <td id="td1"> Publication Date</td>
                     <td id="td1"> Price </td>
+                    <td id="td1"> Book Image </td>
                     <td id="td1"> Selected Quantity</td>
                     <td id="td1"> Update Cart</td>
                     <td id="td1"> Remove from cart</td>
@@ -69,6 +70,7 @@
                         <td align="center"> ${item.book.authors} </td>
                         <td align="center"> ${item.book.publicationDate} </td>
                         <td align="center"> ${item.book.price} </td>
+                        <td align="center"><a class = "btn btn-success" href="${contextPath}/seller/viewimage?id=${item.book.bookID}" > View </a></td>
                         <td align="center"><input id="q${item.cartItemID}" type="number" min="1" max="${item.book.quantity}" value="${item.quantityAdd}" required="required" /> </td>
                         <td align="center"><input  class = "btn btn-success" id="${item.cartItemID}" type="button" onclick="myFunction(this.id,${item.book.quantity})" value="Update" /></td>
 <%--                        <td align="center"><input  class = "btn btn-danger"  type="button" onclick="remove(${item.cartItemID})" value="Remove" /></td>--%>

@@ -45,9 +45,9 @@
                 <td align="center"> ${book.price} </td>
                 <td align="center"> ${book.quantity} </td>
                 <td align="center"><a class = "btn btn-success" href="${contextPath}/seller/viewimage?id=${book.bookID}" > View </a></td>
-                <td align="center"><a class = "btn btn-success" href="${contextPath}/seller/deleteimage?id=${book.bookID}" > Delete  </a></td>
+                <td align="center"><a class = "btn btn-success" href="${contextPath}/seller/deleteimage?id=${book.bookID}" onclick = "if (! confirm('Image will be deleted permanently, want to continue?')) return false;"> Delete Images   </a></td>
                 <td align="center"><a class = "btn btn-success" href="${contextPath}/seller/updatebook?id=${book.bookID}" > Update </a></td>
-                <td align="center"><a class = "btn btn-danger" href="${contextPath}/seller/deletebook?id=${book.bookID}" onclick = "if (! confirm('Book will be deleted permanently, want to continue?')) return false;" > Delete </a></td>
+                <td align="center"><a class = "btn btn-danger" href="${contextPath}/seller/deletebook?id=${book.bookID}" onclick = "if (! confirm('Book will be deleted permanently, want to continue?')) return false;" > Delete Book </a></td>
             </tr>
         </c:forEach>
       </table>
