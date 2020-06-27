@@ -3,62 +3,55 @@ jobs:
   pr_check:
     docker:
       - image: circleci/openjdk:8-jdk
-      - image: circleci/mysql:5.7.30
-        environment:
-          MYSQL_ROOT_PASSWORD: password
-          MYSQL_DATABASE: test
-          MYSQL_USER: naresh
-          MYSQL_PASSWORD: abcdefgh
-
     steps:
       - checkout
       - run:
-          name: Build JAR
+          name: Build WAR
           command: |
             mvn clean package
       - run:
-          name: Waiting for MYSQL to be ready
-          command: |
-            for i in `seq 1 10`;
-            do
-            nc  -z  127.0.0.1 3306 && echo Success && exit 0
-            echo -n .
-            sleep 1
-            done
-            echo Failed waiting for MYSQL && exit 1
-      
-      - run:
-          name: Running test
+          name: Running Test Cases
           command: |
             mvn test
-
+      - run:
+          name: Install Packages
+          command: sudo apt-get update && sudo apt-get install wget zip unzip -y
+      - run:
+          name: Install AWS CLI && Configure
+          command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+            aws configure set aws_access_key_id "${ACCESS_KEY}"
+            aws configure set aws_secret_access_key "${SECRET_KEY}"
+            aws configure set region "${REGION}"
+      - run:
+          name: Build Deployment Artifact
+          command: |
+            mkdir package
+            pwd && ls -al
+            mv codedeploy/applicationstart.sh package/
+            mv target/webapps-0.0.1-SNAPSHOT.war package/
+            mv appspec.yml package/
+            cd package
+            pwd && ls -al
+            zip application.zip webapps-0.0.1-SNAPSHOT.war applicationstart.sh appspec.yml
+            pwd && ls -al
+      - run:
+          name: Upload Artifact to S3 bucket
+          command: aws s3 cp package/application.zip s3://${AWS_DEPLOY_BUCKET_NAME}
+      - run:
+          name: Create Deployment
+          command: aws deploy create-deployment --application-name ${APPLICATION_NAME} --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name ${DEPLOYMENT_GROUP_NAME} --s3-location bucket=${AWS_DEPLOY_BUCKET_NAME},bundleType=zip,key=application.zip --region ${REGION}
   build:
     docker:
       - image: circleci/openjdk:8-jdk
-      - image: circleci/mysql:5.7.30
-        environment:
-          MYSQL_ROOT_PASSWORD:  password
-          MYSQL_DATABASE: test
-          MYSQL_USER: naresh
-          MYSQL_PASSWORD: abcdefgh
-
     steps:
       - checkout
       - run:
-          name: Build JAR
+          name: Build WAR
           command: |
             mvn clean package
-      - run:
-          name: Waiting for MYSQL to be ready
-          command: |
-            for i in `seq 1 10`;
-            do
-            nc  -z  127.0.0.1 3306 && echo Success && exit 0
-            echo -n .
-            sleep 1
-            done
-            echo Failed waiting for MYSQL && exit 1
-      
       - run:
           name: Running test
           command: |

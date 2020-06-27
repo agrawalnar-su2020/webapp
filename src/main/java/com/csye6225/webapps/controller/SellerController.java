@@ -80,9 +80,13 @@ public class SellerController {
 
         Book b = bookService.save(book);
 
-        if(file.size()!=0) {
-            Iterator<MultipartFile> i = file.iterator();
-            while (i.hasNext()) {
+System.out.println(file.get(0).isEmpty());
+
+
+        if(!(file.get(0).isEmpty())){
+
+                Iterator<MultipartFile> i = file.iterator();
+                while (i.hasNext()) {
                 MultipartFile temp = i.next();
                 imageService.uploadeImage(temp, b);
             }
@@ -97,6 +101,7 @@ public class SellerController {
     @RequestMapping(value = "/seller/updatebook", method = RequestMethod.GET)
     public ModelAndView updateBook (HttpServletRequest request) {
         ModelAndView mv = new ModelAndView();
+        HashMap<String, String > imagesURL = new HashMap<>();
         // Checking Session
         HttpSession sessionExit = (HttpSession) request.getSession(false);
         if (sessionExit == null)
@@ -114,10 +119,18 @@ public class SellerController {
                 }
             }
             if(flag){
-                List<String> imagesURL = imageService.imagesName(id);
-                mv.addObject("imagesURL",imagesURL);
-                mv.addObject("book", bookService.bookById(id));
-                mv.setViewName("updateBook");
+                List<String> imagesName = imageService.imagesName(id);
+                if(imagesName==null) imagesName = new ArrayList<>();
+                    Iterator<String> k = imagesName.iterator();
+                    while (k.hasNext()) {
+                        String temp = k.next();
+                        String image = imageService.viewImage(temp);
+                        imagesURL.put(temp, image);
+                    }
+                    mv.addObject("images", imagesURL);
+                    mv.addObject("book", bookService.bookById(id));
+                    mv.setViewName("updateBook");
+
             }else{
                 mv.addObject("error","You can't update this book");
                 mv.setViewName("error");
@@ -138,7 +151,7 @@ public class SellerController {
         book.setPrice(Double.parseDouble(request.getParameter("price")));
         book.setBookUpdateTime(new Date());
         Book b = bookService.save(book);
-        if(file.size()!=0) {
+        if(!(file.get(0).isEmpty())) {
             Iterator<MultipartFile> i = file.iterator();
             while (i.hasNext()) {
                 MultipartFile temp = i.next();
@@ -187,11 +200,11 @@ public class SellerController {
                     imageService.deleteS3Image(temp);
                 }
 
-                List<Long> imagesID = imageService.imagesID(id);
-                Iterator<Long> j = imagesID.iterator();
+                List<BookImages> images = imageService.images(id);
+                Iterator<BookImages> j = images.iterator();
                 while (j.hasNext()) {
-                    Long temp = j.next();
-                    imageService.deleteDBImage(temp);
+                    BookImages temp = j.next();
+                    imageService.deleteDBImage(temp.getImageID());
                 }
             }
             bookService.deleteBook(id);
@@ -208,7 +221,7 @@ public class SellerController {
 
     @RequestMapping(value = "/seller/viewimage", method = RequestMethod.GET)
     public ModelAndView viewImage (HttpServletRequest request) {
-        List<String> imagesURL = new LinkedList<>();
+        HashMap<String, String > imagesURL = new HashMap<>();
         ModelAndView mv = new ModelAndView();
         // Checking Session
         HttpSession sessionExit = (HttpSession) request.getSession(false);
@@ -225,51 +238,65 @@ public class SellerController {
                 while (k.hasNext()) {
                     String temp = k.next();
                     String image = imageService.viewImage(temp);
-                    imagesURL.add(image);
+                    imagesURL.put(temp,image);
                 }
-                mv.addObject("imagesURL",imagesURL);
+                mv.addObject("images",imagesURL);
                 mv.setViewName("viewImages");
             }
         }
         return mv;
     }
 
-    @RequestMapping(value = "/seller/deleteimage", method = RequestMethod.GET)
-    public ModelAndView deleteImage (HttpServletRequest request) {
-        ModelAndView mv = new ModelAndView();
-        // Checking Session
-        HttpSession sessionExit = (HttpSession) request.getSession(false);
-        if (sessionExit == null)
-            mv.setViewName("index");
-        else {
-            Long bookID = Long.parseLong(request.getParameter("id"));
-            User user = (User) sessionExit.getAttribute("user");
-            List<String> imagesName = imageService.imagesName(bookID);
-            if(imagesName.size()==0){
-                mv.addObject("error","Image is not available");
-                mv.setViewName("error");
-            }else{
-                Iterator<String> i=imagesName.iterator();
-                    while(i.hasNext()) {
-                        String temp = i.next();
-                        imageService.deleteS3Image(temp);
-                    }
-                List<Long> imagesID =imageService.imagesID(bookID);
-                Iterator<Long> j=imagesID.iterator();
-                while(j.hasNext()) {
-                    Long temp = j.next();
-                    imageService.deleteDBImage(temp);
-                }
-
-                List<Book> books = bookService.sellerBooks(user.getUserID());
-                Collections.sort(books, new BookComparator());
-                mv.addObject("sellerBooks",books);
-                mv.setViewName("Seller");
+@RequestMapping(value = "/seller/deleteimage", method = RequestMethod.GET)
+public ModelAndView deleteImage (HttpServletRequest request) {
+    ModelAndView mv = new ModelAndView();
+    HashMap<String, String > imagesURL = new HashMap<>();
+    boolean flag = false;
+    // Checking Session
+    HttpSession sessionExit = (HttpSession) request.getSession(false);
+    if (sessionExit == null)
+        mv.setViewName("index");
+    else {
+        String imageName = request.getParameter("imageName");
+        Long id = Long.parseLong(request.getParameter("id"));
+        User user = (User) sessionExit.getAttribute("user");
+        List<Book> books = bookService.sellerBooks(user.getUserID());
+        Iterator<Book> i = books.iterator();
+        while (i.hasNext()) {
+            Book temp = i.next();
+            if (temp.getBookID() == id) {
+                flag = true;
             }
         }
-        return mv;
+        if (flag) {
+            BookImages image = imageService.imageByName(imageName);
+            if (image==null){
+                mv.addObject("error","You can't delete this image");
+                mv.setViewName("error");
+            }else {
+                imageService.deleteS3Image(image.getImageName());
+                imageService.deleteDBImage(image.getImageID());
+                List<String> imagesName = imageService.imagesName(id);
+                if (imagesName == null)
+                    imagesName = new ArrayList<>();
+
+                Iterator<String> k = imagesName.iterator();
+                while (k.hasNext()) {
+                    String temp = k.next();
+                    String imageU = imageService.viewImage(temp);
+                    imagesURL.put(temp, imageU);
+                }
+                mv.addObject("images", imagesURL);
+                mv.addObject("book", bookService.bookById(id));
+                mv.setViewName("updateBook");
+            }
+        }else{
+            mv.addObject("error","You can't delete this image");
+            mv.setViewName("error");
+        }
     }
 
-
+    return mv;
+    }
 
 }
