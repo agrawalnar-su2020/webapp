@@ -4,7 +4,12 @@ files:
   - source: webapps-0.0.1-SNAPSHOT.war
     destination: /app
 hooks:
+  BeforeInstall:
+    - location: ./beforeinstall.sh
+      timeout: 180
+      runas: ubuntu
   ApplicationStart:
     - location: ./applicationstart.sh
       timeout: 240
       runas: ubuntu
+  
