@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: webapps-0.0.1-SNAPSHOT.war
-    destination: /app
+    destination: /var
 hooks:
   BeforeInstall:
     - location: ./beforeinstall.sh
@@ -10,6 +10,6 @@ hooks:
       runas: ubuntu
   ApplicationStart:
     - location: ./applicationstart.sh
-      timeout: 400
+      timeout: 300
       runas: ubuntu
   
