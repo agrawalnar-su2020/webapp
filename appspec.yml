@@ -6,5 +6,5 @@ files:
 hooks:
   ApplicationStart:
     - location: ./applicationstart.sh
-      timeout: 180
+      timeout: 240
       runas: ubuntu
