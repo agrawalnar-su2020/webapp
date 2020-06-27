@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: webapps-0.0.1-SNAPSHOT.war
-    destination: /var
+    destination: /app
 hooks:
   ApplicationStart:
     - location: ./applicationstart.sh
