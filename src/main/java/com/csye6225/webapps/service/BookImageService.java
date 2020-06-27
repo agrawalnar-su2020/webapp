@@ -3,10 +3,7 @@ package com.csye6225.webapps.service;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.DeleteObjectRequest;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.services.s3.model.*;
 import com.csye6225.webapps.model.Book;
 import com.csye6225.webapps.model.BookImages;
 import com.csye6225.webapps.repository.BookImagesRepository;
@@ -115,12 +112,8 @@ public class BookImageService {
         return base64;
     }
 
-//    public List<String> bookImagesURL(Long bookID){
-//        return repository.bookImagesURL(bookID);
-//    }
-
-    public List<Long> imagesID(Long bookID){
-        return repository.imagesID(bookID);
+    public List<BookImages> images(Long bookID){
+        return repository.images(bookID);
     }
 
     public List<String> imagesName(Long bookID){
@@ -129,6 +122,14 @@ public class BookImageService {
 
     public void deleteDBImage(Long imageID){
         repository.deleteById(imageID);
+    }
+
+    public BookImages imageBYID(Long ID){
+        return repository.findById(ID).orElse(null);
+    }
+
+   public BookImages imageByName(String imageName){
+        return repository.imageByName(imageName);
     }
 
 }
