@@ -32,7 +32,7 @@
 <a id="a1" class = "btn btn-info" href="${contextPath}/buyer/cart" >Cart</a>
 
 <br>
-<h3> Welcome ${user.firstName} </h3>
+<h3> Welcome to online book store, ${user.firstName} </h3>
 <br>
 <c:choose>
             <c:when test="${empty buyerBooks}">
