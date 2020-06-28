@@ -109,6 +109,7 @@
             <td> <input type="file" size="15" name="image" multiple="multiple" accept="image/*" /></td>
         </tr>
         <tr>
+            <td></td>
             <td colspan="2"><input type="hidden" name="id"  value="${book.bookID}"><input class = "btn btn-success" type="submit" id="submit" value="Update Book" /></td>
         </tr>
 
