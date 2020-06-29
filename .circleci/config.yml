@@ -13,6 +13,20 @@ jobs:
           name: Running Test Cases
           command: |
             mvn test
+      
+  build:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    steps:
+      - checkout
+      - run:
+          name: Build WAR
+          command: |
+            mvn clean package
+      - run:
+          name: Running test
+          command: |
+            mvn test
       - run:
           name: Install Packages
           command: sudo apt-get update && sudo apt-get install wget zip unzip -y
@@ -45,19 +59,6 @@ jobs:
       - run:
           name: Create Deployment
           command: aws deploy create-deployment --application-name ${APPLICATION_NAME} --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name ${DEPLOYMENT_GROUP_NAME} --s3-location bucket=${AWS_DEPLOY_BUCKET_NAME},bundleType=zip,key=application-${CIRCLE_BUILD_NUM}.zip --region ${REGION}
-  build:
-    docker:
-      - image: circleci/openjdk:8-jdk
-    steps:
-      - checkout
-      - run:
-          name: Build WAR
-          command: |
-            mvn clean package
-      - run:
-          name: Running test
-          command: |
-            mvn test
 
 workflows:
   version: 2
