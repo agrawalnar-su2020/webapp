@@ -230,7 +230,7 @@ System.out.println(file.get(0).isEmpty());
             mv.addObject("sellerBooks",bookUp);
             mv.setViewName("Seller");
             log.info("Book deleted");
-            statsd.recordExecutionTime("book delete", System.currentTimeMillis() - startTime);
+            statsd.recordExecutionTime("book deleted", System.currentTimeMillis() - startTime);
         }else{
             mv.addObject("error","You can't delete this book");
             mv.setViewName("error");
@@ -254,7 +254,6 @@ System.out.println(file.get(0).isEmpty());
                 mv.addObject("error","Image is not available");
                 mv.setViewName("error");
             }else{
-                statsd.incrementCounter("Viewed Book with bookID:"+bookID);
                 long startTime = System.currentTimeMillis();
                 Iterator<String> k = imagesName.iterator();
                 while (k.hasNext()) {
