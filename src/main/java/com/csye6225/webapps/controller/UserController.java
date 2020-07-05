@@ -121,6 +121,7 @@ public class UserController {
             mv.addObject("buyerBooks",books);
             mv.setViewName("home");
             log.info("User Home");
+            statsd.incrementCounter("books viewed");
         }
         return mv;
     }
