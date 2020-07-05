@@ -8,6 +8,10 @@ import com.csye6225.webapps.model.User;
 import com.csye6225.webapps.service.BookImageService;
 import com.csye6225.webapps.service.BookService;
 import com.csye6225.webapps.service.CartItemService;
+import com.timgroup.statsd.NonBlockingStatsDClient;
+import com.timgroup.statsd.StatsDClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,6 +39,9 @@ public class SellerController {
     @Autowired
     BookImageService imageService;
 
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final StatsDClient statsd = new NonBlockingStatsDClient("csye6225.webapp", "localhost", 8125);
+
     @RequestMapping(value = "/seller", method = RequestMethod.GET)
     public ModelAndView sellerHome (HttpServletRequest request) {
         ModelAndView mv = new ModelAndView();
@@ -43,11 +50,14 @@ public class SellerController {
         if (sessionExit == null)
             mv.setViewName("index");
         else {
+            long startTime = System.currentTimeMillis();
             User user = (User) sessionExit.getAttribute("user");
             List<Book> books = bookService.sellerBooks(user.getUserID());
             Collections.sort(books, new BookComparator());
             mv.addObject("sellerBooks",books);
             mv.setViewName("Seller");
+            log.info("Seller home page");
+            statsd.recordExecutionTime("seller home", System.currentTimeMillis() - startTime);
         }
         return mv;
     }
@@ -68,6 +78,7 @@ public class SellerController {
     public ModelAndView registerBook (HttpServletRequest request, Book book, @RequestParam("image") List<MultipartFile> file) {
         ModelAndView mv = new ModelAndView();
         HttpSession session = (HttpSession) request.getSession();
+        long startTime = System.currentTimeMillis();
         User user = (User) session.getAttribute("user");
         book.setTitle(request.getParameter("title"));
         book.setISBN(request.getParameter("ISBN"));
@@ -95,7 +106,8 @@ System.out.println(file.get(0).isEmpty());
         Collections.sort(books, new BookComparator());
         mv.addObject("sellerBooks",books);
         mv.setViewName("Seller");
-
+        log.info("New book added");
+        statsd.recordExecutionTime("book added to store", System.currentTimeMillis() - startTime);
         return mv;
     }
     @RequestMapping(value = "/seller/updatebook", method = RequestMethod.GET)
@@ -107,6 +119,7 @@ System.out.println(file.get(0).isEmpty());
         if (sessionExit == null)
             mv.setViewName("index");
         else {
+            long startTime = System.currentTimeMillis();
             boolean flag = false;
             Long id = Long.parseLong(request.getParameter("id"));
             User user = (User) sessionExit.getAttribute("user");
@@ -130,10 +143,12 @@ System.out.println(file.get(0).isEmpty());
                     mv.addObject("images", imagesURL);
                     mv.addObject("book", bookService.bookById(id));
                     mv.setViewName("updateBook");
+                statsd.recordExecutionTime("book update", System.currentTimeMillis() - startTime);
 
             }else{
                 mv.addObject("error","You can't update this book");
                 mv.setViewName("error");
+                log.warn("You can't update this book");
             }
         }
         return mv;
@@ -164,6 +179,7 @@ System.out.println(file.get(0).isEmpty());
         Collections.sort(books, new BookComparator());
         mv.addObject("sellerBooks",books);
         mv.setViewName("Seller");
+        log.info("Book updated");
         return mv;
     }
 
@@ -171,6 +187,7 @@ System.out.println(file.get(0).isEmpty());
     public ModelAndView deleteBook (HttpServletRequest request) {
         ModelAndView mv = new ModelAndView();
         boolean flag = false;
+        long startTime = System.currentTimeMillis();
         Long id = Long.parseLong(request.getParameter("id"));
         HttpSession sessionExit = (HttpSession) request.getSession(false);
         User user = (User) sessionExit.getAttribute("user");
@@ -212,9 +229,12 @@ System.out.println(file.get(0).isEmpty());
             Collections.sort(bookUp, new BookComparator());
             mv.addObject("sellerBooks",bookUp);
             mv.setViewName("Seller");
+            log.info("Book deleted");
+            statsd.recordExecutionTime("book delete", System.currentTimeMillis() - startTime);
         }else{
             mv.addObject("error","You can't delete this book");
             mv.setViewName("error");
+            log.warn("You can't delete this book");
         }
        return mv;
     }
@@ -234,6 +254,8 @@ System.out.println(file.get(0).isEmpty());
                 mv.addObject("error","Image is not available");
                 mv.setViewName("error");
             }else{
+                statsd.incrementCounter("Viewed Book with bookID:"+bookID);
+                long startTime = System.currentTimeMillis();
                 Iterator<String> k = imagesName.iterator();
                 while (k.hasNext()) {
                     String temp = k.next();
@@ -242,6 +264,8 @@ System.out.println(file.get(0).isEmpty());
                 }
                 mv.addObject("images",imagesURL);
                 mv.setViewName("viewImages");
+                log.info("Viewing Book images");
+                statsd.recordExecutionTime("view book image", System.currentTimeMillis() - startTime);
             }
         }
         return mv;
@@ -257,6 +281,7 @@ public ModelAndView deleteImage (HttpServletRequest request) {
     if (sessionExit == null)
         mv.setViewName("index");
     else {
+        long startTime = System.currentTimeMillis();
         String imageName = request.getParameter("imageName");
         Long id = Long.parseLong(request.getParameter("id"));
         User user = (User) sessionExit.getAttribute("user");
@@ -289,10 +314,13 @@ public ModelAndView deleteImage (HttpServletRequest request) {
                 mv.addObject("images", imagesURL);
                 mv.addObject("book", bookService.bookById(id));
                 mv.setViewName("updateBook");
+                log.info("Book images deleted");
+                statsd.recordExecutionTime("delete book image", System.currentTimeMillis() - startTime);
             }
         }else{
             mv.addObject("error","You can't delete this image");
             mv.setViewName("error");
+            log.warn("You can't delete this image");
         }
     }
 

@@ -9,6 +9,10 @@ import com.csye6225.webapps.service.BookService;
 import com.csye6225.webapps.service.ShoppingCartService;
 import com.csye6225.webapps.service.UserService;
 import com.csye6225.webapps.validator.UserValidator;
+import com.timgroup.statsd.NonBlockingStatsDClient;
+import com.timgroup.statsd.StatsDClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -39,9 +43,12 @@ public class UserController {
     @Autowired
     private UserValidator userValidator;
 
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final StatsDClient statsd = new NonBlockingStatsDClient("csye6225.webapp", "localhost", 8125);
+
     @RequestMapping(value = "/")
     public String index(){
-
+        log.info("Login page");
         return "index";
     }
 
@@ -62,23 +69,27 @@ public class UserController {
             mv.setViewName("registerUsers");
             return mv;
         }
-
+        long startTime = System.currentTimeMillis();
         User u = userService.save(user);
         cart.setUser(user);
         cartService.save(cart);
         mv.addObject("user",user);
         mv.setViewName("registrationSuccess");
+        log.info("User Registered Successfully");
+        statsd.recordExecutionTime("Register User", System.currentTimeMillis() - startTime);
         return mv;
     }
     @RequestMapping(value = "/home", method = RequestMethod.POST)
     public ModelAndView login(HttpServletRequest request ){
         ModelAndView mv = new ModelAndView();
+        long startTime = System.currentTimeMillis();
         String userName = request.getParameter("username");
         String password = request.getParameter("password");
         User u = userService.checkLogin(userName,password);
        if(u==null) {
            mv.addObject("error","Email/Password invalid");
            mv.setViewName("error");
+           log.error("Email/Password invalid");
        }
        else {
            HttpSession session = (HttpSession) request.getSession();
@@ -88,6 +99,8 @@ public class UserController {
            Collections.sort(books, new BookComparator());
            mv.addObject("buyerBooks",books);
            mv.setViewName("home");
+           log.info("User with UserID:"+u.getUserID()+" login");
+           statsd.recordExecutionTime("Login", System.currentTimeMillis() - startTime);
        }
        return mv;
     }
@@ -107,6 +120,7 @@ public class UserController {
             Collections.sort(books, new BookComparator());
             mv.addObject("buyerBooks",books);
             mv.setViewName("home");
+            log.info("User Home");
         }
         return mv;
     }
@@ -134,6 +148,7 @@ public class UserController {
         if(sessionExpired==null )
             mv.setViewName("index");
         else {
+            long startTime = System.currentTimeMillis();
             HttpSession session = (HttpSession) request.getSession(false);
             User u = (User) session.getAttribute("user");
             u.setFirstName(request.getParameter("firstName"));
@@ -146,13 +161,18 @@ public class UserController {
             Collections.sort(books, new BookComparator());
             mv.addObject("buyerBooks",books);
             mv.setViewName("home");
+            log.info("User detail updated");
+            statsd.recordExecutionTime("update user deatails", System.currentTimeMillis() - startTime);
         }
         return mv;
     }
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public String logout(HttpServletRequest request){
+        long startTime = System.currentTimeMillis();
         HttpSession session = (HttpSession) request.getSession();
         session.invalidate();
+        log.info("User logout");
+        statsd.recordExecutionTime("logout", System.currentTimeMillis() - startTime);
         return "index";
     }
 }
