@@ -7,6 +7,10 @@ import com.amazonaws.services.s3.model.*;
 import com.csye6225.webapps.model.Book;
 import com.csye6225.webapps.model.BookImages;
 import com.csye6225.webapps.repository.BookImagesRepository;
+import com.timgroup.statsd.NonBlockingStatsDClient;
+import com.timgroup.statsd.StatsDClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -29,22 +33,25 @@ public class BookImageService {
     @Autowired
     BookImagesRepository repository;
 
+    private static final StatsDClient statsd = new NonBlockingStatsDClient("csye6225.webapp", "localhost", 8125);
+
     @Value("${Bucketname:aDefaultValue}")
     private String bucketName;
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     public void save(BookImages image){
         repository.save(image);
     }
 
     public void uploadeImage (MultipartFile file, Book b){
-
+        long startTime = System.currentTimeMillis();
         String filename = new Date().getTime() + StringUtils.cleanPath(file.getOriginalFilename());
         BookImages image = new BookImages();
         image.setBook(b);
         image.setImageName(filename);
         save(image);
         uploadToS3(file,filename);
-
+        statsd.recordExecutionTime("upload image to S3", System.currentTimeMillis() - startTime);
     }
 
     public void uploadToS3(MultipartFile file, String fileName) {
@@ -57,6 +64,7 @@ public class BookImageService {
         System.out.println("after put");
         covFile.delete();
         System.out.println("after delete");
+        log.info("Book image uploaded to S3");
     }
 
     private File convertMultiPartToFile(MultipartFile file) {
@@ -70,16 +78,21 @@ public class BookImageService {
         } catch (IOException | AmazonServiceException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            log.error(e.getMessage());
         }
         return convFile;
     }
 
     public void deleteS3Image(String fileName) {
+        long startTime = System.currentTimeMillis();
         AmazonS3 s3client = AmazonS3ClientBuilder.defaultClient();
         s3client.deleteObject(new DeleteObjectRequest(bucketName, fileName));
+        log.info("Book image deleted from S3");
+        statsd.recordExecutionTime("delete image from s3", System.currentTimeMillis() - startTime);
     }
 
     public String viewImage(String key){
+        long startTime = System.currentTimeMillis();
         String base64 ="";
         try {
 
@@ -91,6 +104,7 @@ public class BookImageService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        statsd.recordExecutionTime("get image from s3", System.currentTimeMillis() - startTime);
         return base64.isEmpty() ? null : base64;
     }
 

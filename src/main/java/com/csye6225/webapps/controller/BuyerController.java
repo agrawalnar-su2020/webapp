@@ -7,6 +7,10 @@ import com.csye6225.webapps.model.User;
 import com.csye6225.webapps.service.BookService;
 import com.csye6225.webapps.service.CartItemService;
 import com.csye6225.webapps.service.ShoppingCartService;
+import com.timgroup.statsd.NonBlockingStatsDClient;
+import com.timgroup.statsd.StatsDClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,9 +33,12 @@ public class BuyerController {
     @Autowired
     BookService bookService;
 
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final StatsDClient statsd = new NonBlockingStatsDClient("csye6225.webapp", "localhost", 8125);
 
     @RequestMapping(value = "/buyer/addcart", method = RequestMethod.POST)
     public void addTOCart (HttpServletRequest request, CartItem cartItem) {
+            long startTime = System.currentTimeMillis();
 
             HttpSession sessionExit = (HttpSession) request.getSession(false);
             User user = (User) sessionExit.getAttribute("user");
@@ -52,6 +59,8 @@ public class BuyerController {
               int temp =exitItem.getQuantityAdd()+quant;
               exitItem.setQuantityAdd(temp);
               cartItemService.save(exitItem);
+              log.info("Book added to cart");
+              statsd.recordExecutionTime("add to cart", System.currentTimeMillis() - startTime);
             }
             else {
                 cartItem.setQuantityAdd(quant);
@@ -60,6 +69,8 @@ public class BuyerController {
                 cartItemService.save(cartItem);
                 cart.getCartItem().add(cartItem);
                 cartService.save(cart);
+                log.info("Book added to cart");
+                statsd.recordExecutionTime("add to cart", System.currentTimeMillis() - startTime);
             }
     }
 
@@ -71,10 +82,13 @@ public class BuyerController {
         if (sessionExit == null)
             mv.setViewName("index");
         else {
+            long startTime = System.currentTimeMillis();
             User user = (User) sessionExit.getAttribute("user");
             ShoppingCart cart = cartService.cartByUserID(user.getUserID());
             mv.addObject("cartItem",cart.getCartItem());
             mv.setViewName("shoppingCart");
+            log.info("View cart");
+            statsd.recordExecutionTime("view cart", System.currentTimeMillis() - startTime);
         }
         return mv;
     }
@@ -82,6 +96,7 @@ public class BuyerController {
     @RequestMapping(value = "/buyer/updatecart", method = RequestMethod.POST)
     public ModelAndView updateCart (HttpServletRequest request) {
         ModelAndView mv = new ModelAndView();
+        long startTime = System.currentTimeMillis();
         int quant =Integer.parseInt (request.getParameter("quantityAdd"));
         CartItem exitItem = cartItemService.cartItemByID(Long.parseLong(request.getParameter("id")));
         exitItem.setQuantityAdd(quant);
@@ -91,6 +106,8 @@ public class BuyerController {
         ShoppingCart cart = cartService.cartByUserID(user.getUserID());
         mv.addObject("cartItem",cart.getCartItem());
         mv.setViewName("shoppingCart");
+        log.info("Cart updated");
+        statsd.recordExecutionTime("update cart", System.currentTimeMillis() - startTime);
         return mv;
     }
 
@@ -102,6 +119,7 @@ public class BuyerController {
         if (sessionExit == null)
             mv.setViewName("index");
         else {
+            long startTime = System.currentTimeMillis();
             User user = (User) sessionExit.getAttribute("user");
             ShoppingCart cart = cartService.cartByUserID(user.getUserID());
             Long id = Long.parseLong(request.getParameter("id"));
@@ -119,9 +137,12 @@ public class BuyerController {
                 ShoppingCart cartNew = cartService.cartByUserID(user.getUserID());
                 mv.addObject("cartItem", cartNew.getCartItem());
                 mv.setViewName("shoppingCart");
+                log.info("Book removed from cart");
+                statsd.recordExecutionTime("remove book from cart", System.currentTimeMillis() - startTime);
             }else{
                 mv.addObject("error","You can't remove book from cart");
                 mv.setViewName("error");
+                log.warn("You can't remove this book");
             }
         }
         return mv;
