@@ -34,8 +34,10 @@ public class UserService {
           if(user == null)
               return user ;
           else {
-              if (BCrypt.checkpw(password, user.getPassword()))
+              if (BCrypt.checkpw(password, user.getPassword())) {
+                  statsd.recordExecutionTime("DB check login", System.currentTimeMillis() - startTime);
                   return user;
+              }
           }
         statsd.recordExecutionTime("DB check login", System.currentTimeMillis() - startTime);
           return null;

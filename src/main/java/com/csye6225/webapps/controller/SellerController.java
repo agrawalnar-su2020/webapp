@@ -143,7 +143,7 @@ System.out.println(file.get(0).isEmpty());
                     mv.addObject("images", imagesURL);
                     mv.addObject("book", bookService.bookById(id));
                     mv.setViewName("updateBook");
-                statsd.recordExecutionTime("book update", System.currentTimeMillis() - startTime);
+                statsd.recordExecutionTime("book update GET", System.currentTimeMillis() - startTime);
 
             }else{
                 mv.addObject("error","You can't update this book");
@@ -156,6 +156,7 @@ System.out.println(file.get(0).isEmpty());
     @RequestMapping(value = "/seller/updatebook", method = RequestMethod.POST)
     public ModelAndView updateBookS (HttpServletRequest request,@RequestParam("image") List<MultipartFile> file) {
         ModelAndView mv = new ModelAndView();
+        long startTime = System.currentTimeMillis();
         Long id = Long.parseLong(request.getParameter("id"));
         Book book = bookService.bookById(id);
         book.setTitle(request.getParameter("title"));
@@ -180,6 +181,7 @@ System.out.println(file.get(0).isEmpty());
         mv.addObject("sellerBooks",books);
         mv.setViewName("Seller");
         log.info("Book updated");
+        statsd.recordExecutionTime("book update POST", System.currentTimeMillis() - startTime);
         return mv;
     }
 
