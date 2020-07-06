@@ -138,7 +138,7 @@ public class BuyerController {
                 mv.addObject("cartItem", cartNew.getCartItem());
                 mv.setViewName("shoppingCart");
                 log.info("Book removed from cart");
-                statsd.recordExecutionTime("remove book from cart", System.currentTimeMillis() - startTime);
+                statsd.recordExecutionTime("remove from cart", System.currentTimeMillis() - startTime);
             }else{
                 mv.addObject("error","You can't remove book from cart");
                 mv.setViewName("error");

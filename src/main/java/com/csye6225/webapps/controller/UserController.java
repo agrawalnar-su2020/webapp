@@ -101,6 +101,7 @@ public class UserController {
            mv.setViewName("home");
            log.info("User with UserID:"+u.getUserID()+" login");
            statsd.recordExecutionTime("Login", System.currentTimeMillis() - startTime);
+           statsd.incrementCounter("books viewed");
        }
        return mv;
     }
@@ -163,7 +164,7 @@ public class UserController {
             mv.addObject("buyerBooks",books);
             mv.setViewName("home");
             log.info("User detail updated");
-            statsd.recordExecutionTime("update user deatails", System.currentTimeMillis() - startTime);
+            statsd.recordExecutionTime("update user details", System.currentTimeMillis() - startTime);
         }
         return mv;
     }

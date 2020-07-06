@@ -37,6 +37,7 @@ public class BookImageService {
 
     @Value("${Bucketname:aDefaultValue}")
     private String bucketName;
+
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     public void save(BookImages image){
