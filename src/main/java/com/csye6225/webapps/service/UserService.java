@@ -22,10 +22,16 @@ public class UserService {
 
     public User save(User user) {
         user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt(10)));
-        return repository.save(user);
+        long startTime = System.currentTimeMillis();
+        User u= repository.save(user);
+        statsd.recordExecutionTime("DB save user", System.currentTimeMillis() - startTime);
+        return u;
     }
     public User findByEmail(String email){
-        return repository.findByEmail(email);
+        long startTime = System.currentTimeMillis();
+        User u= repository.findByEmail(email);
+        statsd.recordExecutionTime("DB findByEmail", System.currentTimeMillis() - startTime);
+        return u;
     }
 
     public User checkLogin(String email, String password) {

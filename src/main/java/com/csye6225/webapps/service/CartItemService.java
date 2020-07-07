@@ -28,7 +28,10 @@ public class CartItemService {
     }
 
      public List<CartItem> cartItemByBookID(Long bookID){
-        return repository.cartItemByBookID(bookID);
+         long startTime = System.currentTimeMillis();
+         List<CartItem> ci = repository.cartItemByBookID(bookID);
+         statsd.recordExecutionTime("DB cartItemByBookID", System.currentTimeMillis() - startTime);
+         return ci;
     }
 
     public void delete(CartItem item){
