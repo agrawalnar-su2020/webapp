@@ -22,7 +22,10 @@ public class ShoppingCartService {
     }
 
     public ShoppingCart cartByUserID(Long userID){
-        return repository.cartByUserID(userID);
+        long startTime = System.currentTimeMillis();
+        ShoppingCart c= repository.cartByUserID(userID);
+        statsd.recordExecutionTime("DB  cartByUserID", System.currentTimeMillis() - startTime);
+        return c;
     }
 
 }

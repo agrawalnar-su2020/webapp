@@ -18,7 +18,10 @@ public class BookService {
     private static final StatsDClient statsd = new NonBlockingStatsDClient("csye6225.webapp", "localhost", 8125);
 
     public Book save(Book book){
-        return repository.save(book);
+         long startTime = System.currentTimeMillis();
+         Book b= repository.save(book);
+         statsd.recordExecutionTime("DB save book", System.currentTimeMillis() - startTime);
+         return b;
     }
 
     public List<Book> sellerBooks(Long userID){
@@ -36,6 +39,9 @@ public class BookService {
         statsd.recordExecutionTime("DB delete book", System.currentTimeMillis() - startTime);
     }
     public List<Book> buyerBooks(Long userID){
-        return repository.buyerBooks(userID);
+        long startTime = System.currentTimeMillis();
+        List<Book> b= repository.buyerBooks(userID);
+        statsd.recordExecutionTime("DB buyerBooks", System.currentTimeMillis() - startTime);
+        return b;
     }
 }
