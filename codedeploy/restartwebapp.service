@@ -1,0 +1,12 @@
+[Unit]
+Description=Restart the REST Service
+
+[Service]
+User=ubuntu
+
+WorkingDirectory=/var
+ExecStart=/var/afterinstall.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
