@@ -1,7 +1,7 @@
 version: 0.0
 os: linux
 files:
-  - source: webapps-0.0.1-SNAPSHOT.war
+  - source: /
     destination: /var
   - source: amazon-cloudwatch-agent.json
     destination: /opt
@@ -10,12 +10,12 @@ hooks:
     - location: ./beforeinstall.sh
       timeout: 180
       runas: ubuntu
-  ApplicationStart:
-    - location: ./applicationstart.sh
-      timeout: 500
-      runas: ubuntu
+  # ApplicationStart:
+  #   - location: ./applicationstart.sh
+  #     timeout: 500
+  #     runas: ubuntu
   AfterInstall:
     - location: ./afterinstall.sh
-      timeout: 300
+      timeout: 400
       runas: ubuntu
   
