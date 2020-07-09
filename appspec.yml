@@ -10,12 +10,12 @@ hooks:
     - location: ./beforeinstall.sh
       timeout: 180
       runas: ubuntu
-  # ApplicationStart:
-  #   - location: ./applicationstart.sh
-  #     timeout: 500
-  #     runas: ubuntu
+  ApplicationStart:
+    - location: ./applicationstart.sh
+      timeout: 400
+      runas: ubuntu
   AfterInstall:
     - location: ./afterinstall.sh
-      timeout: 400
+      timeout: 200
       runas: ubuntu
   
