@@ -2,6 +2,7 @@
 Description=Restart the REST Service
 
 [Service]
+Type=forking
 User=ubuntu
 
 WorkingDirectory=/var
