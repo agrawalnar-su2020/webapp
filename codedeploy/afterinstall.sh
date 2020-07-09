@@ -1,11 +1,11 @@
 #!/bin/bash
-cd /var
-sudo java -jar webapps-0.0.1-SNAPSHOT.war > /dev/null 2> /dev/null < /dev/null &
-cd ~
-sleep 200
-sudo systemctl restart amazon-cloudwatch-agent
-sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
-    -a fetch-config \
-    -m ec2 \
-    -c file:/opt/amazon-cloudwatch-agent.json \
-    -s
+set -x
+sudo chmod 755 /var/applicationstart.sh
+sudo cp /var/restartwebapp.service /etc/systemd/system/
+sudo chmod +x /etc/systemd/system/restartwebapp.service
+sudo systemctl daemon-reload
+sudo systemctl enable restartwebapp.service
+sudo systemctl restart restartwebapp.service
+sudo kill -9 $(sudo lsof -t -i:8080)
+sudo kill -9 $(sudo lsof -t -i:8080)
+set +x

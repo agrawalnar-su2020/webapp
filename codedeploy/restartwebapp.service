@@ -5,7 +5,7 @@ Description=Restart the REST Service
 User=ubuntu
 
 WorkingDirectory=/var
-ExecStart=/var/afterinstall.sh
+ExecStart=/var/applicationstart.sh
 Restart=always
 
 [Install]
