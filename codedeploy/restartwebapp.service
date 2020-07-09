@@ -6,7 +6,6 @@ User=ubuntu
 
 WorkingDirectory=/var
 ExecStart=/var/applicationstart.sh
-Restart=always
 
 [Install]
 WantedBy=multi-user.target
