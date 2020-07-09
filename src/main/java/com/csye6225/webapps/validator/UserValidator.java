@@ -2,6 +2,8 @@ package com.csye6225.webapps.validator;
 
 import com.csye6225.webapps.model.User;
 import com.csye6225.webapps.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -16,6 +18,8 @@ public class UserValidator implements Validator {
     private final Pattern pattern= Pattern.compile("[a-zA-Z ]+");
     private final Pattern patternemail=Pattern.compile("[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$");
     private final Pattern patternPassword=Pattern.compile("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,15}$");
+
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private UserService userService;
@@ -55,15 +59,14 @@ public class UserValidator implements Validator {
             if (u != null){
                 errors.rejectValue("email", "error.invalid.user", "Email ID already taken");
             }
-            System.out.println(user.getPassword());
-            System.out.println(user.getConfirmPassword());
+
             if(!user.getConfirmPassword().equals(user.getPassword())){
                 errors.rejectValue("confirmPassword", "error.invalid.user", "Password must be same");
             }
 
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            System.out.println("Exception: " + e.getMessage());
+            log.warn(e.getMessage());
         }
 
     }

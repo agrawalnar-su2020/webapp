@@ -91,9 +91,6 @@ public class SellerController {
 
         Book b = bookService.save(book);
 
-System.out.println(file.get(0).isEmpty());
-
-
         if(!(file.get(0).isEmpty())){
 
                 Iterator<MultipartFile> i = file.iterator();

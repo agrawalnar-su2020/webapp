@@ -56,20 +56,16 @@ public class BookImageService {
     }
 
     public void uploadToS3(MultipartFile file, String fileName) {
-        System.out.println("in uploadToS3");
+
         AmazonS3 s3client = AmazonS3ClientBuilder.defaultClient();
-        System.out.println("after deafaultclient");
         File covFile = convertMultiPartToFile(file);
-        System.out.println("after convert");
         s3client.putObject(new PutObjectRequest(bucketName,fileName, covFile));
-        System.out.println("after put");
         covFile.delete();
-        System.out.println("after delete");
         log.info("Book image uploaded to S3");
     }
 
     private File convertMultiPartToFile(MultipartFile file) {
-        System.out.println("in convert");
+
         File convFile = new File(file.getOriginalFilename());
         FileOutputStream fos;
         try {
