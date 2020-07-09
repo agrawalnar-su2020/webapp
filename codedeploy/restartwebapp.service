@@ -4,6 +4,7 @@ Description=Restart the REST Service
 [Service]
 Type=forking
 User=ubuntu
+TimeoutStartSec=250
 
 WorkingDirectory=/var
 ExecStart=/var/applicationstart.sh
