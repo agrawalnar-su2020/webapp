@@ -48,7 +48,6 @@ public class UserController {
 
     @RequestMapping(value = "/")
     public String index(){
-        log.info("Login page");
         return "index";
     }
 
