@@ -26,6 +26,10 @@
             <td></td>
             <td colspan="2"><input class = "btn btn-success" type="submit" value="Login" /></td>
         </tr>
+        <tr>
+            <td></td>
+            <td><a href="/passwordreset" >Forget password</a></td>
+        </tr>
 
     </table>
 

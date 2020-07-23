@@ -8,6 +8,7 @@ import com.csye6225.webapps.model.User;
 import com.csye6225.webapps.service.BookService;
 import com.csye6225.webapps.service.ShoppingCartService;
 import com.csye6225.webapps.service.UserService;
+import com.csye6225.webapps.validator.PasswordResetValidator;
 import com.csye6225.webapps.validator.UserValidator;
 import com.timgroup.statsd.NonBlockingStatsDClient;
 import com.timgroup.statsd.StatsDClient;
@@ -42,6 +43,9 @@ public class UserController {
 
     @Autowired
     private UserValidator userValidator;
+
+    @Autowired
+    private PasswordResetValidator passwordResetValidator;
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private static final StatsDClient statsd = new NonBlockingStatsDClient("csye6225.webapp", "localhost", 8125);
@@ -175,5 +179,29 @@ public class UserController {
         log.info("User logout");
         statsd.recordExecutionTime("logout", System.currentTimeMillis() - startTime);
         return "index";
+    }
+    @RequestMapping(value = "/passwordreset", method = RequestMethod.GET)
+    public String paasordRest(ModelMap model){
+        model.addAttribute("password",new User());
+        return "passwordReset";
+    }
+
+    @RequestMapping(value = "/passwordreset", method = RequestMethod.POST)
+    public  ModelAndView passwordReset(@ModelAttribute("password") User password, BindingResult bindingResult, ModelMap model){
+
+        ModelAndView mv = new ModelAndView();
+        passwordResetValidator.validate(password, bindingResult);
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("password",password);
+            mv.setViewName("passwordReset");
+            return mv;
+        }
+        long startTime = System.currentTimeMillis();
+        userService.passwordReset(password.getEmail());
+        mv.setViewName("index");
+        log.info("password reset");
+        statsd.recordExecutionTime("password reset", System.currentTimeMillis() - startTime);
+        return mv;
     }
 }
