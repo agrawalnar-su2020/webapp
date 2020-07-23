@@ -1,5 +1,4 @@
 # webapp
-
 ## CSYE 6225 - Summer 2020
 
 ## Technology Stack
